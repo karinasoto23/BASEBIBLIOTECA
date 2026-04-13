@@ -2,11 +2,11 @@ package cl.biblioteca.bivliotecaduoc.controller;
 
 import cl.biblioteca.bivliotecaduoc.model.Libro;
 import cl.biblioteca.bivliotecaduoc.service.LibroService;
-import cl.biblioteca.bivliotecaduoc.dto.ClientRequest;
+import cl.biblioteca.bivliotecaduoc.dto.UpdateCreateLibroRequest;
 import cl.biblioteca.bivliotecaduoc.mapper.LibroMapper;
 import cl.biblioteca.bivliotecaduoc.exception.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +20,14 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1/libros")
 
 public class LibroController {
-    @Autowired
-    private LibroService libroService;
+
+    private final LibroService libroService;
+
+     // Constructor injection (mejor práctica 2026)
+        public LibroController(LibroService libroService) {
+                this.libroService = libroService;
+        }
+    
     
     @GetMapping
     public List<Libro> listarLibros(){
@@ -29,7 +35,7 @@ public class LibroController {
     }
 
     @PostMapping
-    public ResponseEntity<?> agregarLibro(@Valid @RequestBody ClientRequest request, BindingResult result) {
+    public ResponseEntity<?> agregarLibro(@Valid @RequestBody UpdateCreateLibroRequest request, BindingResult result) {
 
         if (result.hasErrors()) {
             Map<String, String> errores = new HashMap<>();
@@ -70,5 +76,10 @@ public class LibroController {
     return ResponseEntity.ok("Libro eliminado correctamente, id: " + id);
     }
     
+    @GetMapping("/total")
+        public ResponseEntity<Integer> totalLibros() {
+                int total = libroService.totalLibrosV2();
+                return ResponseEntity.ok(total);
+        }
 
 }
