@@ -30,8 +30,6 @@ public class LibroService {
     public String deleteLibro(int id){
         libroRepositorio.deleteById(id);
         return "Producto elimminado";
-
-    
     }
 
          // LA ACCIÓN LA HACE EL SERVICE
@@ -45,6 +43,12 @@ public class LibroService {
         return libroRepositorio.totalLibros();
     
     }
+
+    public List<Libro> buscarPorAutor(String autor) {
+    return libroRepositorio.findByAutor(autor);
+}
+
+
 
 
 

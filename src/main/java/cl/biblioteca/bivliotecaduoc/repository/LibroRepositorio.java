@@ -4,6 +4,10 @@ import cl.biblioteca.bivliotecaduoc.model.Libro;
 import org.springframework.stereotype.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import java.util.List;
+
 
 @Repository
 public interface LibroRepositorio extends JpaRepository<Libro, Integer> {
@@ -11,6 +15,9 @@ public interface LibroRepositorio extends JpaRepository<Libro, Integer> {
     default int totalLibros() {
         return (int) this.count(); // ← "this" se refiere a la instancia del repository
     }
+
+     @Query(value = "SELECT * FROM librosK WHERE autor = :autor", nativeQuery = true)
+    List<Libro> findByAutor(@Param("autor") String autor);
 }
     
 

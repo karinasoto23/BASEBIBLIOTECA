@@ -2,6 +2,7 @@ package cl.biblioteca.bivliotecaduoc.controller;
 
 import cl.biblioteca.bivliotecaduoc.model.Libro;
 import cl.biblioteca.bivliotecaduoc.service.LibroService;
+import cl.biblioteca.bivliotecaduoc.dto.PokemonResponse;
 import cl.biblioteca.bivliotecaduoc.dto.UpdateCreateLibroRequest;
 import cl.biblioteca.bivliotecaduoc.mapper.LibroMapper;
 import cl.biblioteca.bivliotecaduoc.exception.*;
@@ -15,17 +16,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import jakarta.validation.Valid;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @RestController
-@RequestMapping("/api/v1/libros")
+@RequestMapping("/api/v1/librosk")
 
 public class LibroController {
 
     private final LibroService libroService;
+    private final WebClient pokeApiWebClient;
 
      // Constructor injection (mejor práctica 2026)
-        public LibroController(LibroService libroService) {
+        public LibroController(LibroService libroService,WebClient pokeApiWebClient) {
                 this.libroService = libroService;
+                this.pokeApiWebClient = pokeApiWebClient;
         }
     
     
@@ -81,5 +85,25 @@ public class LibroController {
                 int total = libroService.totalLibrosV2();
                 return ResponseEntity.ok(total);
         }
+
+
+
+    @GetMapping("/autor/{autor}")
+    public List<Libro> buscarPorAutor(@PathVariable("autor") String autor) {
+        return libroService.buscarPorAutor(autor);
+         }
+
+    @GetMapping("/pokeapi")
+    public ResponseEntity<PokemonResponse> consultarPokemon(
+                    @RequestParam(name = "nombre") String nombre) {
+
+
+            PokemonResponse pokemon = pokeApiWebClient.get()
+                            .uri("/pokemon-species/{nombre}", nombre) // Endpoint más simple
+                            .retrieve().bodyToMono(PokemonResponse.class).block();
+
+
+            return ResponseEntity.ok(pokemon);
+    }
 
 }
